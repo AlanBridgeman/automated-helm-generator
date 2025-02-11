@@ -26,5 +26,5 @@ class ThirdPartyService (Template):
                         snake_case_name += token.capitalize()
                 
                 f.write('  ' + key.replace('_', '-') + ': {{ .Values.thirdParty.' + self.name + '.' + snake_case_name + ' | b64enc }}' + '\n')
-            #f.write('  ' + 'api-key: {{ .Values.thirdParty.openai.apiKey | b64enc }}' + '\n')
+            
             f.write('{{- end -}}' + '\n')

@@ -119,7 +119,7 @@ class HelmChart:
                             snake_case_name += token.capitalize()
                     
                     f.write(f'{snake_case_name}: "{value["value"]}"' + '\n')
-            #f.write('privateRegistryToken: "<Private Registry Token>"' + '\n')
+            
             f.write('\n')
 
             # If a OAuth template is included in the provided templates than we want to include the appropriate section to the `values.yaml` file.
@@ -266,12 +266,7 @@ class HelmChart:
                         if token != snake_case_name:
                             snake_case_name += token.capitalize()
                     f.write('  ' + f'{snake_case_name}: "{value["value"]}"' + '\n')
-                #f.write('  ' + 'activityProperties: activity' + '\n')
-                #f.write('  ' + 'eventProperties: eventProps' + '\n')
-                #f.write('  ' + 'localeProperties: locales' + '\n')
-                #f.write('  ' + 'organizerProperties: organizerProps' + '\n')
-                #f.write('  ' + 'userProperties: userProps' + '\n')
-                #f.write('  ' + 'templates: templates' + '\n')
+                
                 f.write('\n')
             
             # If a Redis template is included in the provided templates than we want to include the appropriate section to the values.yaml file.
@@ -354,13 +349,6 @@ class HelmChart:
                                 snake_case_name += token.capitalize()
                         f.write('  ' + '  ' + f'{snake_case_name}: {value}' + '\n')
                     f.write('  ' + '  ' + '\n')
-            #f.write('  ' + '# Configuration for the OpenAI integration' + '\n')
-            #f.write('  ' + 'openai:' + '\n')
-            #f.write('  ' + '  ' + '# If the OpenAI integration is enabled' + '\n')
-            #f.write('  ' + '  ' + 'enabled: true' + '\n')
-            #f.write('  ' + '  ' + '\n')
-            #f.write('  ' + '  ' + '# The OpenAI API key' + '\n')
-            #f.write('  ' + '  ' + 'apiKey: ""' + '\n')
     
     def write_helmignore(self):
         with open('.helmignore', 'w') as f:

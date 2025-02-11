@@ -44,12 +44,7 @@ if __name__ == '__main__':
     nosql_db_name = data['nosql']['dbName']
     nosql_user = data['nosql']['user']
     nosql_password = data['nosql']['password']
-    #activityProperties: activity
-    #eventProperties: eventProps
-    #localeProperties: locales
-    #organizerProperties: organizerProps
-    #userProperties: userProps
-    #templates: templates
+    
     tables = data['nosql']['tables']
 
     cache_password = data['cache']['password']

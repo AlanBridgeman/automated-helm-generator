@@ -229,10 +229,3 @@ class Deployment (Template):
                     f.write('  ' + '  '  '  ' + '  ' + '  ' + '  ' + '  ' + f'key: {var.replace("_", "-")}' + '\n')
                 
                 f.write('  ' + '  ' + '  ' + '  ' + '{{- end }}' + '\n')
-            #f.write('  ' + '  ' + '  ' + '  ' + '{{- if .Values.thirdParty.openai.enabled }}' + '\n')
-            #f.write('  ' + '  ' + '  ' + '  ' + '- name: OPEANAI_API_KEY' + '\n')
-            #f.write('  ' + '  ' + '  ' + '  ' + '  ' + 'valueFrom:' + '\n')
-            #f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'secretKeyRef:' + '\n')
-            #f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'name: {{ .Release.Name }}-openai-secret' + '\n')
-            #f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'key: api-key' + '\n')
-            #f.write('  ' + '  ' + '  ' + '  ' + '{{- end }}' + '\n')
