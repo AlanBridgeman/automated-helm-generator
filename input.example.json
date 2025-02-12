@@ -29,10 +29,18 @@
         "user": "<Database User>",
         "password": "<Database Password>"
     },
+    "vault": {
+        "image": {
+            "repository": "<Vault Image Repository>",
+            "tag": "<Vault Image Tag>"
+        },
+        "hostname": "<DNS Name where the vault will be hosted>",
+        "storageClass": "<Storage Class Name>"
+    },
     "nosql": {
         "dbName": "<NoSQL Database Name>",
         "user": "<NoSQL Database User>",
-        "password": "",
+        "password": "<NoSQL Database Password>",
         "tables": {
             "<Table Environment Variable Name>": {
                 "name": "<Table Intermediate Name (used in Helm template files)>",
@@ -55,6 +63,12 @@
     "thirdPartyServices": {
         "openai": {
             "apiKey": "<OpenAI API Key>"
+        },
+        "stripe": {
+            "publicKey": "<Stripe Public Key>",
+            "secretKey": "<Stripe Secret Key>",
+            "testPublicKey": "<Stripe Test Public Key>",
+            "testSecretKey": "<Stripe Test Secret Key>"
         }
     },
     "extraEnvVars": {

@@ -3,6 +3,9 @@ import os, subprocess
 from .Template import Template
 from .Ingress import Ingress
 from .Database import Database
+from .SecretsVault import SecretsVault
+from .HashicorpVault import HashicorpVault
+from .AzureKeyVault import AzureKeyVault
 from .NoSQL import NoSQL
 from .MongoDB import MongoDB
 from .AzureTableStorage import AzureTableStorage
@@ -294,6 +297,151 @@ class HelmChart:
 
         return output
     
+    def create_secrets_vault_section_of_values_yaml(self) -> str:
+        """Create the Secrets Vault section of the `values.yaml` file for the Helm chart.
+
+        The Secrets Vault section is used to define the Secrets Vault configuration that the app will use.
+
+        Returns:
+            str: The Secrets Vault section of the `values.yaml` file
+        """
+
+        output = ''
+
+        # Get the Secrets Vault template from the templates provided
+        secrets_vault_template = next(template for template in self.templates if isinstance(template, SecretsVault))
+
+        output += '# Configurations for the secrets vault' + '\n'
+        output += 'vault:' + '\n'
+        output += '  ' + '# If a secrets vault should be used' + '\n'
+        output += '  ' + '# That is, if a dedicated software for secret management should be used' + '\n'
+        output += '  ' + '# This should virtually always be true if storing any kind of sensitive information as it\'s the most secure option' + '\n'
+        output += '  ' + 'enabled: true' + '\n'
+        output += '  ' + '\n'
+        output += '  ' + '# The type of secrets vault to use.' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + '# Vaults' + '\n'
+        output += '  ' + '# ------' + '\n'
+        output += '  ' + '# The following table lists the supported vault types:' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + '# | Type        | Description          | Current Status | Required Fields                                     |' + '\n'
+        output += '  ' + '# | ----------- | -------------------- | -------------- | --------------------------------------------------- |' + '\n'
+        output += '  ' + '# | `hashicorp` | Uses Hashicorp Vault | Implemented    | `vaultName` (if `create` not true)                  |' + '\n'
+        output += '  ' + '# | `azure`     | Uses Azure Key Vault | Implemented    | `vaultName`, `clientId`, `clientSecret`, `tenantId` |' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + f'type: "{secrets_vault_template.type}"' + '\n'
+        output += '  ' + '\n'
+        output += '  ' + '# Configurations to create a Hashicorp Vault instance as part of the Helm chart' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + '# THIS IS ONLY RELEVANT IF `type` IS SET TO `hashicorp`' + '\n'
+        output += '  ' + 'create:' + '\n'
+        output += '  ' + '  ' + '# If a Hashicorp Vault instance should be created as part of the Helm chart' + '\n'
+        if isinstance(secrets_vault_template, HashicorpVault):
+            output += '  ' + '  ' + f'enabled: {str(secrets_vault_template.create).lower()}' + '\n'
+        else:
+            output += '  ' + '  ' + 'enabled: <true/false>' + '\n'
+        output += '  ' + '  ' + '\n'
+        output += '  ' + '  ' + '# Configurations for the image to use if creating the Hashicorp Vault instance' + '\n'
+        output += '  ' + '  ' + '# as part of the Helm chart' + '\n'
+        output += '  ' + '  ' + 'image:' + '\n'
+        output += '  ' + '  ' + '  ' + '# The repository of the image to use' + '\n'
+        if isinstance(secrets_vault_template, HashicorpVault):
+            output += '  ' + '  ' + '  ' + f'repository: {secrets_vault_template.image["repository"]}' + '\n'
+        else:
+            output += '  ' + '  ' + '  ' + 'repository: <image repository>' + '\n'
+        output += '  ' + '  ' + '  ' + '\n'
+        output += '  ' + '  ' + '  ' + '# The tag of the image to use' + '\n'
+        if isinstance(secrets_vault_template, HashicorpVault):
+            output += '  ' + '  ' + '  ' + f'tag: {secrets_vault_template.image["tag"]}' + '\n'
+        else:
+            output += '  ' + '  ' + '  ' + 'tag: <image tag>' + '\n'
+        output += '  ' + '  ' + '\n'
+        output += '  ' + '  ' + '# Configurations for the ingress of the created Hashicorp Vault instance' + '\n'
+        output += '  ' + '  ' + 'ingress:' + '\n'
+        output += '  ' + '  ' + '  ' + '# If an ingress should be created for the created Hashicorp Vault instance' + '\n'
+        if isinstance(secrets_vault_template, HashicorpVault):
+            output += '  ' + '  ' + '  ' + f'enabled: {str(secrets_vault_template.create and secrets_vault_template.hostname != None).lower()}' + '\n'
+        else:
+            output += '  ' + '  ' + '  ' + 'enabled: <true/false>' + '\n'
+        output += '  ' + '  ' + '  ' + '\n'
+        output += '  ' + '  ' + '  ' + '# The host of the ingress for the created Hashicorp Vault instance' + '\n'
+        if isinstance(secrets_vault_template, HashicorpVault):
+            output += '  ' + '  ' + '  ' + f'host: {secrets_vault_template.hostname}' + '\n'
+        else:
+            output += '  ' + '  ' + '  ' + 'host: <DNS Name for vault>' + '\n'
+        output += '  ' + '  ' + '\n'
+        output += '  ' + '  ' + '# Configurations for the storage of the created Hashicorp Vault instance' + '\n'
+        output += '  ' + '  ' + 'storage:' + '\n'
+        output += '  ' + '  ' + '  ' + '# The storage class to use for the created Hashicorp Vault instance\'s Persistent Volume Claim' + '\n'
+        if isinstance(secrets_vault_template, HashicorpVault):
+            if secrets_vault_template.create:
+                output += '  ' + '  ' + '  ' + f'class: {secrets_vault_template.storage_class}' + '\n'
+            else:
+                output += '  ' + '  ' + '  ' + 'class: <storage class>' + '\n'
+        else:
+            output += '  ' + '  ' + '  ' + 'class: <storage class>' + '\n'
+        output += '  ' + '  ' + '  ' + '\n'
+        output += '  ' + '  ' + '  ' + '# The size of the created Hashicorp Vault instance\'s Persistent Volume Claim' + '\n'
+        if isinstance(secrets_vault_template, HashicorpVault):
+            if secrets_vault_template.create:
+                output += '  ' + '  ' + '  ' + f'size: {secrets_vault_template.storage_size}' + '\n'
+            else:
+                output += '  ' + '  ' + '  ' + 'size: <storage size>' + '\n'
+        else:
+            output += '  ' + '  ' + '  ' + 'size: <storage size>' + '\n'
+        output += '  ' + '\n'
+        output += '  ' + '# The name of the vault instance to connect to' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + '# This is relevant if type is set to `hashicorp` or `azure`' + '\n'
+        output += '  ' + '# Note, if `create` is true this is ignored' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + '# For `hashicorp`, this is generally the hostname of the Hashicorp Vault instance to connect to' + '\n'
+        output += '  ' + '# For `azure`, this is the name of the Azure Key Vault instance to connect to' + '\n'
+        if isinstance(secrets_vault_template, HashicorpVault):
+            if secrets_vault_template.create:
+                output += '  ' + f'#vaultName: "<vault name>"' + '\n'
+            else:
+                output += '  ' + f'vaultName: "{secrets_vault_template.hostname}"' + '\n'
+        elif isinstance(secrets_vault_template, AzureKeyVault):
+            output += '  ' + f'vaultName: "{secrets_vault_template.name}"' + '\n'
+        output += '  ' + '\n'
+        output += '  ' + '# The port of the vault instance to connect to' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + '# ONLY RELEVANT iF `type` IS SET TO `hashicorp` AND `create` IS NOT TRUE' + '\n'
+        if isinstance(secrets_vault_template, HashicorpVault):
+            if not secrets_vault_template.create:
+                output += '  ' + f'#vaultPort: {secrets_vault_template.port}' + '\n'
+            else:
+                output += '  ' + f'vaultPort: {secrets_vault_template.port}' + '\n'
+        else:
+            output += '  ' + '#vaultPort: <vault port>' + '\n'
+        output += '  ' + '\n'
+        output += '  ' + '# The client ID of the Azure Key Vault instance' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + '# ONLY RELEVANT IF `type` IS SET TO `azure`' + '\n'
+        if isinstance(secrets_vault_template, AzureKeyVault):
+            output += '  ' + f'client-id: "{secrets_vault_template.client_id}"' + '\n'
+        else:
+            output += '  ' + '#client-id: <Azure Key Vault Client ID>' + '\n'
+        output += '  ' + '\n'
+        output += '  ' + '# The client secret of the Azure Key Vault instance' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + '# ONLY RELEVANT IF `type` IS SET TO `azure`' + '\n'
+        if isinstance(secrets_vault_template, AzureKeyVault):
+            output += '  ' + f'client-secret: "{secrets_vault_template.client_secret}"' + '\n'
+        else:
+            output += '  ' + '#client-secret: <Azure Key Vault Client Secret>' + '\n'
+        output += '  ' + '\n'
+        output += '  ' + '# The tenant ID of the Azure Key Vault instance' + '\n'
+        output += '  ' + '# ' + '\n'
+        output += '  ' + '# ONLY RELEVANT IF `type` IS SET TO `azure`' + '\n'
+        if isinstance(secrets_vault_template, AzureKeyVault):
+            output += '  ' + f'tenant-id: "{secrets_vault_template.tenant_id}"' + '\n'
+        else:
+            output += '  ' + '#tenant-id: <Azure Key Vault Tenant ID>' + '\n' 
+
+        return output
+
     def create_nosql_section_of_values_yaml(self) -> str:
         """Create the NoSQL section of the `values.yaml` file for the Helm chart.
 
@@ -502,6 +650,8 @@ class HelmChart:
                     
                     output += '  ' + '  ' + f'{camel_case_name}: {value}' + '\n'
                 output += '  ' + '  ' + '\n'
+        
+        return output
 
     def write_values_yaml(self):
         """Write the `values.yaml` file for the Helm chart.
@@ -536,6 +686,10 @@ class HelmChart:
             if any(isinstance(template, Database) for template in self.templates):
                 f.write(self.create_database_section_of_values_yaml())
             
+            # If a Secrets Vault template is included in the provided templates than we want to include the appropriate section to the `values.yaml` file.
+            if any(isinstance(template, SecretsVault) for template in self.templates):
+                f.write(self.create_secrets_vault_section_of_values_yaml())
+
             # If a Database template is included in the provided templates than we want to include the appropriate section to the `values.yaml` file.
             if any(isinstance(template, NoSQL) for template in self.templates):
                 f.write(self.create_nosql_section_of_values_yaml())

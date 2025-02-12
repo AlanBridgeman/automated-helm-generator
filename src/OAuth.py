@@ -1,7 +1,7 @@
 from .Template import Template
 
 class OAuth (Template):
-    def __init__(self, base_app_url: str, app_abbreviation: str, app_name: str, service_name: str, dev_port: str, client_id: str, client_secret: str):
+    def __init__(self, base_app_url: str, app_abbreviation: str, app_name: str, service_name: str, dev_port: str):
         """A class for creating a/some template(s) related to OAuth implementation."""
 
         self.base_app_url = base_app_url
