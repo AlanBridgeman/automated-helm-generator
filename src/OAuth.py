@@ -9,8 +9,6 @@ class OAuth (Template):
         self.app_name = app_name
         self.service_name = service_name
         self.dev_port = dev_port
-        self.client_id = client_id
-        self.client_secret = client_secret
     
     def write(self):
         with open('templates/oauth-credentials-config-map.yaml', 'w') as f:
@@ -26,15 +24,3 @@ class OAuth (Template):
             f.write('  ' + 'app-name: {{ .Values.oauth.appName }}' + '\n')
             f.write('  ' + 'service-name: {{ .Values.oauth.serviceName }}' + '\n')
             f.write('  ' + 'dev-port: {{ .Values.oauth.devPort | quote }}' + '\n')
-            f.write('  ' + 'client-id: {{ .Values.oauth.clientId | quote }}' + '\n')
-        
-        with open('templates/oauth-client-secret.yaml', 'w') as f:
-            f.write('apiVersion: v1' + '\n')
-            f.write('kind: Secret' + '\n')
-            f.write('metadata:' + '\n')
-            f.write('  ' + 'name: {{ .Release.Name }}-oauth-client-secret' + '\n')
-            f.write('  ' + 'labels:' + '\n')
-            f.write('  ' + '  ' + 'app: {{ .Release.Name }}' + '\n')
-            f.write('type: Opaque' + '\n')
-            f.write('data:' + '\n')
-            f.write('  ' + 'client-secret: {{ .Values.oauth.clientSecret | b64enc }}' + '\n')

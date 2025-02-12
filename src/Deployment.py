@@ -131,16 +131,6 @@ class Deployment (Template):
                 f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'configMapKeyRef:' + '\n')
                 f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'name: {{ .Release.Name }}-oauth-credentials' + '\n')
                 f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'key: dev-port' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '- name: CLIENT_ID' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '  ' + 'valueFrom:' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'configMapKeyRef:' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'name: {{ .Release.Name }}-oauth-credentials' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'key: client-id' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '- name: CLIENT_SECRET' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '  ' + 'valueFrom:' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'secretKeyRef:' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'name: {{ .Release.Name }}-oauth-client-secret' + '\n')
-                f.write('  ' + '  ' + '  ' + '  ' + '  ' + '  ' + '  ' + 'key: client-secret' + '\n')
             
             if self.uses_db:
                 f.write('  ' + '  ' + '  ' + '  ' + '# Database credentials' + '\n')
