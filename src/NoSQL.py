@@ -2,6 +2,15 @@ from .Template import Template
 
 class NoSQL (Template):
     def __init__(self, type: str, db_name: str, tables: dict[str, dict[str, str]], create: bool = True):
+        """Use of a NoSQL storage system
+        
+        Args:
+            type (str): The type of NoSQL storage to use
+            db_name (str): The name of the NoSQL storage to connect to
+            tables (dict[str, dict[str, str]]): A dictionary of NoSQL tables/collections
+            create (bool, optional): Whether to create the NoSQL resources as part of the Helm deployment. Defaults to True.
+        """
+
         super().__init__()
 
         self.type = type
